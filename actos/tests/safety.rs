@@ -1,4 +1,4 @@
-use markstone_actos::{to_ast, to_html, MarkstoneError, MAX_INPUT_SIZE};
+use markstone_actos::{MAX_INPUT_SIZE, MarkstoneError, to_ast, to_html};
 
 #[test]
 fn test_mention_attribute_injection_impossible() {

@@ -1,4 +1,4 @@
-use markstone_actos::{to_ast, to_html, AstDocument, Node};
+use markstone_actos::{AstDocument, Node, to_ast, to_html};
 
 #[test]
 fn test_link_text_exclusion() {
@@ -98,10 +98,7 @@ fn test_code_block_exclusion() {
     // Indented code block
     let input2 = "    @alice\n    #notatag\n";
     let html2 = to_html(input2).unwrap();
-    assert_eq!(
-        html2,
-        "<pre><code>@alice\n#notatag\n</code></pre>\n"
-    );
+    assert_eq!(html2, "<pre><code>@alice\n#notatag\n</code></pre>\n");
     assert!(!html2.contains("class=\"mention\""));
     assert!(!html2.contains("class=\"tag\""));
 }

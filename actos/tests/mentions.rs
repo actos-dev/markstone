@@ -1,4 +1,4 @@
-use markstone_actos::{to_ast, to_ast_bytes, to_html, to_html_bytes, AstDocument, Node};
+use markstone_actos::{AstDocument, Node, to_ast, to_ast_bytes, to_html, to_html_bytes};
 
 #[test]
 fn test_mention_valid_usernames() {
@@ -33,10 +33,16 @@ fn test_mention_too_short_rejection() {
     assert_eq!(to_html("Hello @ world").unwrap(), "<p>Hello @ world</p>\n");
 
     // 1 char: @a
-    assert_eq!(to_html("Hello @a world").unwrap(), "<p>Hello @a world</p>\n");
+    assert_eq!(
+        to_html("Hello @a world").unwrap(),
+        "<p>Hello @a world</p>\n"
+    );
 
     // 2 chars: @ab
-    assert_eq!(to_html("Hello @ab world").unwrap(), "<p>Hello @ab world</p>\n");
+    assert_eq!(
+        to_html("Hello @ab world").unwrap(),
+        "<p>Hello @ab world</p>\n"
+    );
 
     // AST verification
     let ast_json = to_ast("Hello @ab world").unwrap();
@@ -64,7 +70,10 @@ fn test_mention_uppercase_rejection() {
     assert_eq!(to_html("Hello @Alice").unwrap(), "<p>Hello @Alice</p>\n");
     assert_eq!(to_html("Hello @FOO").unwrap(), "<p>Hello @FOO</p>\n");
     assert_eq!(to_html("Hello @fooBar").unwrap(), "<p>Hello @fooBar</p>\n");
-    assert_eq!(to_html("Hello @foo_Bar").unwrap(), "<p>Hello @foo_Bar</p>\n");
+    assert_eq!(
+        to_html("Hello @foo_Bar").unwrap(),
+        "<p>Hello @foo_Bar</p>\n"
+    );
 
     let ast_json = to_ast("@Foo").unwrap();
     assert!(!ast_json.contains(r#""type":"mention""#));
@@ -73,8 +82,14 @@ fn test_mention_uppercase_rejection() {
 #[test]
 fn test_mention_hyphen_rejection() {
     // Hyphens are not permitted in usernames (only [a-z0-9_])
-    assert_eq!(to_html("Hello @a-b world").unwrap(), "<p>Hello @a-b world</p>\n");
-    assert_eq!(to_html("Hello @alice-bob world").unwrap(), "<p>Hello @alice-bob world</p>\n");
+    assert_eq!(
+        to_html("Hello @a-b world").unwrap(),
+        "<p>Hello @a-b world</p>\n"
+    );
+    assert_eq!(
+        to_html("Hello @alice-bob world").unwrap(),
+        "<p>Hello @alice-bob world</p>\n"
+    );
 
     let ast_json = to_ast("@alice-bob").unwrap();
     assert!(!ast_json.contains(r#""type":"mention""#));
@@ -188,7 +203,11 @@ fn test_mention_ast_node_structure_and_pos() {
     // Mention: @alice
     assert_eq!(inlines[1].node_type(), "mention");
     match &inlines[1] {
-        Node::Mention { username, text, pos } => {
+        Node::Mention {
+            username,
+            text,
+            pos,
+        } => {
             assert_eq!(username, "alice");
             assert_eq!(text, "@alice");
             assert_eq!(pos, &[1, 7, 1, 12]);

@@ -23,7 +23,7 @@
 //! assert!(actos_html.contains(r#"<a href="/u/alice" class="mention">@alice</a>"#));
 //! ```
 
-pub use markstone_core::ast::{to_ast, to_ast_bytes, AST_SCHEMA_VERSION};
+pub use markstone_core::ast::{AST_SCHEMA_VERSION, to_ast, to_ast_bytes};
 pub use markstone_core::error::MarkstoneError;
 pub use markstone_core::render::{to_html, to_html_bytes};
 

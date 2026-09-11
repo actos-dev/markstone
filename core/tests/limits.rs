@@ -1,4 +1,4 @@
-use markstone_core::{to_html, MarkstoneError, MAX_INPUT_SIZE};
+use markstone_core::{MAX_INPUT_SIZE, MarkstoneError, to_html};
 
 #[test]
 fn test_input_size_limit_exact_4mib() {

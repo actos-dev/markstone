@@ -15,7 +15,8 @@ pub fn is_valid_username(s: &str) -> bool {
     if !(3..=32).contains(&len) {
         return false;
     }
-    s.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_')
+    s.bytes()
+        .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_')
 }
 
 /// Validates whether a candidate string satisfies the Actos tag constraints:
@@ -71,7 +72,8 @@ pub fn split_text_node(value: String, pos: [usize; 4]) -> Vec<Node> {
 
         if ch == '@' || ch == '#' {
             let is_mention = ch == '@';
-            let preceding_forbidden = prev_char.is_some_and(|c| c.is_ascii_alphanumeric() || c == '_');
+            let preceding_forbidden =
+                prev_char.is_some_and(|c| c.is_ascii_alphanumeric() || c == '_');
 
             if !preceding_forbidden {
                 // Look ahead to extract candidate token
@@ -106,7 +108,12 @@ pub fn split_text_node(value: String, pos: [usize; 4]) -> Vec<Node> {
                     let node_start_col = cur_col;
                     let token_char_count = 1 + cand.chars().count();
                     let node_end_col = node_start_col + token_char_count - 1;
-                    let node_pos = [node_start_line, node_start_col, node_start_line, node_end_col];
+                    let node_pos = [
+                        node_start_line,
+                        node_start_col,
+                        node_start_line,
+                        node_end_col,
+                    ];
 
                     if is_mention {
                         result.push(Node::Mention {

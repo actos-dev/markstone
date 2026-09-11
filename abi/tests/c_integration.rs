@@ -25,7 +25,10 @@ fn test_c_integration_shared_and_static() {
         .current_dir(workspace_dir)
         .status()
         .expect("failed to run cargo build -p markstone-abi");
-    assert!(build_status.success(), "cargo build -p markstone-abi failed");
+    assert!(
+        build_status.success(),
+        "cargo build -p markstone-abi failed"
+    );
 
     // Also create libmarkstone_abi.so and libmarkstone_abi.a symlinks if they don't exist,
     // to support both libmarkstone and libmarkstone_abi naming conventions.

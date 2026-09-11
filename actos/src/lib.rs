@@ -6,13 +6,13 @@
 pub mod ast_pass;
 pub mod render;
 
-pub use ast_pass::{is_valid_tag, is_valid_username, TAG_PATTERN, USERNAME_PATTERN};
+pub use ast_pass::{TAG_PATTERN, USERNAME_PATTERN, is_valid_tag, is_valid_username};
+pub use markstone_core as core;
+pub use markstone_core::AST_SCHEMA_VERSION;
 pub use markstone_core::ast::{AstDocument, Node};
+pub use markstone_core::depth::MAX_BLOCK_DEPTH;
 pub use markstone_core::error::MarkstoneError;
 pub use markstone_core::render::MAX_INPUT_SIZE;
-pub use markstone_core::depth::MAX_BLOCK_DEPTH;
-pub use markstone_core::AST_SCHEMA_VERSION;
-pub use markstone_core as core;
 
 /// Markstone Actos version string.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

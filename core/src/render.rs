@@ -1,12 +1,12 @@
-use std::fmt::Write as _;
-use comrak::html::{format_document_with_formatter, format_node_default, ChildRendering, Context};
+use comrak::html::{ChildRendering, Context, format_document_with_formatter, format_node_default};
 use comrak::nodes::{AstNode, NodeValue};
 use comrak::options::Plugins;
-use comrak::{parse_document, Arena, Options};
+use comrak::{Arena, Options, parse_document};
+use std::fmt::Write as _;
 
 use crate::depth::check_block_depth;
 use crate::error::MarkstoneError;
-use crate::sanitize::{sanitize_code_block_lang, strip_invisible_and_bidi, validate_url, UrlKind};
+use crate::sanitize::{UrlKind, sanitize_code_block_lang, strip_invisible_and_bidi, validate_url};
 
 /// Maximum permitted input size: 4 MiB (4 * 1024 * 1024 bytes).
 pub const MAX_INPUT_SIZE: usize = 4 * 1024 * 1024;

@@ -68,4 +68,3 @@ pub const AST_SCHEMA_VERSION: u32 = markstone_core::AST_SCHEMA_VERSION;
 pub fn version() -> String {
     markstone_core::VERSION.to_string()
 }
-

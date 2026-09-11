@@ -107,6 +107,8 @@ fn test_thread_concurrency() {
     }
 
     for handle in handles {
-        handle.join().expect("thread panicked during concurrency test");
+        handle
+            .join()
+            .expect("thread panicked during concurrency test");
     }
 }

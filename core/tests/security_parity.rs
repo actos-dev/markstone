@@ -1,5 +1,5 @@
 use markstone_core::{
-    is_invisible_or_bidi, to_ast, to_html, AstDocument, MarkstoneError, Node, MAX_INPUT_SIZE,
+    AstDocument, MAX_INPUT_SIZE, MarkstoneError, Node, is_invisible_or_bidi, to_ast, to_html,
 };
 
 #[test]
@@ -146,7 +146,10 @@ fn test_parity_degraded_link_preserves_formatting() {
     let input = "[**Bold warning** and *italic*](javascript:alert(1))\n";
 
     let html = to_html(input).unwrap();
-    assert_eq!(html, "<p><strong>Bold warning</strong> and <em>italic</em></p>\n");
+    assert_eq!(
+        html,
+        "<p><strong>Bold warning</strong> and <em>italic</em></p>\n"
+    );
     assert!(!html.contains("<a"));
 
     let ast_json = to_ast(input).unwrap();
@@ -187,13 +190,18 @@ fn test_parity_code_block_language_sanitization() {
     let input = "```<script>alert(1)</script>\ncode\n```\n";
 
     let html = to_html(input).unwrap();
-    assert_eq!(html, "<pre><code class=\"language-scriptalert1script\">code\n</code></pre>\n");
+    assert_eq!(
+        html,
+        "<pre><code class=\"language-scriptalert1script\">code\n</code></pre>\n"
+    );
 
     let ast_json = to_ast(input).unwrap();
     let doc: AstDocument = serde_json::from_str(&ast_json).unwrap();
     let cb = &doc.root.children().unwrap()[0];
     match cb {
-        Node::CodeBlock { language, value, .. } => {
+        Node::CodeBlock {
+            language, value, ..
+        } => {
             assert_eq!(language, "scriptalert1script");
             assert_eq!(value, "code\n");
         }

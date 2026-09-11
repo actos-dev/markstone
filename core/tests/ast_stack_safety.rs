@@ -1,4 +1,4 @@
-use markstone_core::{to_ast, MarkstoneError};
+use markstone_core::{MarkstoneError, to_ast};
 use std::thread;
 
 #[test]

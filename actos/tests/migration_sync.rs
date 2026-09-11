@@ -1,12 +1,14 @@
-use markstone_actos::{is_valid_tag, is_valid_username, TAG_PATTERN, USERNAME_PATTERN};
+use markstone_actos::{TAG_PATTERN, USERNAME_PATTERN, is_valid_tag, is_valid_username};
 use regex::Regex;
 use std::path::Path;
 
 #[test]
 fn test_migration_regex_patterns_exact_match() {
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
-    let actors_sql_path = Path::new(manifest_dir).join("../../actos-backend/migrations/0002_actors.up.sql");
-    let tags_sql_path = Path::new(manifest_dir).join("../../actos-backend/migrations/0007_tags.up.sql");
+    let actors_sql_path =
+        Path::new(manifest_dir).join("../../actos-backend/migrations/0002_actors.up.sql");
+    let tags_sql_path =
+        Path::new(manifest_dir).join("../../actos-backend/migrations/0007_tags.up.sql");
 
     // 1. Verify against 0002_actors.up.sql (ck_actors_username_format)
     if actors_sql_path.exists() {
@@ -15,7 +17,9 @@ fn test_migration_regex_patterns_exact_match() {
 
         // Match: CONSTRAINT ck_actors_username_format CHECK ((username)::text ~ '^[a-z0-9_]{3,32}$')
         let re = Regex::new(r"CONSTRAINT\s+ck_actors_username_format\s+CHECK\s*\(\(username\)::text\s*~\s*'([^']+)'\)").unwrap();
-        let caps = re.captures(&content).expect("Failed to find ck_actors_username_format constraint in 0002_actors.up.sql");
+        let caps = re
+            .captures(&content)
+            .expect("Failed to find ck_actors_username_format constraint in 0002_actors.up.sql");
         let sql_pattern = &caps[1];
 
         assert_eq!(
@@ -32,8 +36,13 @@ fn test_migration_regex_patterns_exact_match() {
             .unwrap_or_else(|e| panic!("Failed to read {tags_sql_path:?}: {e}"));
 
         // Match: CONSTRAINT ck_tags_name_format CHECK ((name)::text ~ '^[a-z0-9][a-z0-9-]{0,31}$')
-        let re = Regex::new(r"CONSTRAINT\s+ck_tags_name_format\s+CHECK\s*\(\(name\)::text\s*~\s*'([^']+)'\)").unwrap();
-        let caps = re.captures(&content).expect("Failed to find ck_tags_name_format constraint in 0007_tags.up.sql");
+        let re = Regex::new(
+            r"CONSTRAINT\s+ck_tags_name_format\s+CHECK\s*\(\(name\)::text\s*~\s*'([^']+)'\)",
+        )
+        .unwrap();
+        let caps = re
+            .captures(&content)
+            .expect("Failed to find ck_tags_name_format constraint in 0007_tags.up.sql");
         let sql_pattern = &caps[1];
 
         assert_eq!(

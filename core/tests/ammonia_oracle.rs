@@ -1,5 +1,5 @@
-use std::collections::{HashMap, HashSet};
 use markstone_core::to_html;
+use std::collections::{HashMap, HashSet};
 
 /// Configures ammonia with the Actos platform allowlist.
 ///
@@ -7,22 +7,58 @@ use markstone_core::to_html;
 /// must pass through this sanitizer completely unchanged (byte-for-byte).
 fn platform_sanitizer() -> ammonia::Builder<'static> {
     let allowed_tags = HashSet::from([
-        "p", "h1", "h2", "h3", "h4", "h5", "h6",
-        "strong", "em", "b", "i", "ul", "ol", "li",
-        "code", "pre", "blockquote", "hr", "br",
-        "a", "img", "table", "thead", "tbody", "tr", "th", "td",
-        "del", "s", "section", "sup",
+        "p",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "strong",
+        "em",
+        "b",
+        "i",
+        "ul",
+        "ol",
+        "li",
+        "code",
+        "pre",
+        "blockquote",
+        "hr",
+        "br",
+        "a",
+        "img",
+        "table",
+        "thead",
+        "tbody",
+        "tr",
+        "th",
+        "td",
+        "del",
+        "s",
+        "section",
+        "sup",
     ]);
 
     let mut tag_attrs = HashMap::new();
     tag_attrs.insert(
         "a",
         HashSet::from([
-            "href", "rel", "title", "id", "class",
-            "data-footnote-ref", "data-footnote-backref", "data-footnote-backref-idx", "aria-label",
+            "href",
+            "rel",
+            "title",
+            "id",
+            "class",
+            "data-footnote-ref",
+            "data-footnote-backref",
+            "data-footnote-backref-idx",
+            "aria-label",
         ]),
     );
-    tag_attrs.insert("img", HashSet::from(["src", "alt", "title", "width", "height"]));
+    tag_attrs.insert(
+        "img",
+        HashSet::from(["src", "alt", "title", "width", "height"]),
+    );
     tag_attrs.insert("code", HashSet::from(["class"]));
     tag_attrs.insert("ol", HashSet::from(["start"]));
     tag_attrs.insert("li", HashSet::from(["id"]));

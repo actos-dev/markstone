@@ -1,4 +1,4 @@
-use markstone_actos::{to_ast, to_html, MarkstoneError};
+use markstone_actos::{MarkstoneError, to_ast, to_html};
 use std::thread;
 
 #[test]
@@ -39,14 +39,20 @@ fn test_stack_safety_deeply_nested_inlines_actos() {
 
             // AST path
             let ast_result = to_ast(&input);
-            assert!(ast_result.is_ok(), "to_ast failed on deep inlines with mention/tag");
+            assert!(
+                ast_result.is_ok(),
+                "to_ast failed on deep inlines with mention/tag"
+            );
             let json = ast_result.unwrap();
             assert!(json.contains(r#""username":"alice""#));
             assert!(json.contains(r#""name":"rust""#));
 
             // HTML path
             let html_result = to_html(&input);
-            assert!(html_result.is_ok(), "to_html failed on deep inlines with mention/tag");
+            assert!(
+                html_result.is_ok(),
+                "to_html failed on deep inlines with mention/tag"
+            );
             let html = html_result.unwrap();
             assert!(html.contains("<a href=\"/u/alice\" class=\"mention\">@alice</a>"));
             assert!(html.contains("<a href=\"/t/rust\" class=\"tag\">#rust</a>"));

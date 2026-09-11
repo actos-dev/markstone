@@ -11,7 +11,10 @@ fn test_headings_atx_and_setext() {
 fn test_no_heading_id_generation() {
     let input = "# Some Important Heading with punctuation & symbols!\n";
     let html = to_html(input).unwrap();
-    assert_eq!(html, "<h1>Some Important Heading with punctuation &amp; symbols!</h1>\n");
+    assert_eq!(
+        html,
+        "<h1>Some Important Heading with punctuation &amp; symbols!</h1>\n"
+    );
     assert!(!html.contains("id="));
     assert!(!html.contains("class=\"anchor\""));
 }
@@ -67,7 +70,8 @@ fn test_emphasis_and_strong() {
 
 #[test]
 fn test_code_blocks_fenced_and_indented() {
-    let input = "```rust\nfn main() {\n    println!(\"Hello\");\n}\n```\n\n    indented code block\n";
+    let input =
+        "```rust\nfn main() {\n    println!(\"Hello\");\n}\n```\n\n    indented code block\n";
     let expected = "<pre><code class=\"language-rust\">fn main() {\n    println!(&quot;Hello&quot;);\n}\n</code></pre>\n<pre><code>indented code block\n</code></pre>\n";
     assert_eq!(to_html(input).unwrap(), expected);
 }
@@ -132,7 +136,9 @@ fn test_gfm_autolinks() {
 fn test_gfm_footnotes() {
     let input = "Here is a note[^1].\n\n[^1]: Note content.\n";
     let html = to_html(input).unwrap();
-    assert!(html.contains("<sup class=\"footnote-ref\"><a href=\"#fn-1\" id=\"fnref-1\" data-footnote-ref>1</a></sup>"));
+    assert!(html.contains(
+        "<sup class=\"footnote-ref\"><a href=\"#fn-1\" id=\"fnref-1\" data-footnote-ref>1</a></sup>"
+    ));
     assert!(html.contains("<section class=\"footnotes\" data-footnotes>"));
     assert!(html.contains("<li id=\"fn-1\">"));
     assert!(html.contains("class=\"footnote-backref\""));

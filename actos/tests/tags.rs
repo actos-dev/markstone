@@ -1,4 +1,4 @@
-use markstone_actos::{to_ast, to_ast_bytes, to_html, to_html_bytes, AstDocument, Node};
+use markstone_actos::{AstDocument, Node, to_ast, to_ast_bytes, to_html, to_html_bytes};
 
 #[test]
 fn test_tag_valid_tags() {
@@ -33,8 +33,14 @@ fn test_tag_valid_tags() {
 #[test]
 fn test_tag_starting_with_hyphen_rejection() {
     // Cannot start with a hyphen
-    assert_eq!(to_html("Check #-tag today").unwrap(), "<p>Check #-tag today</p>\n");
-    assert_eq!(to_html("Check #--tag today").unwrap(), "<p>Check #--tag today</p>\n");
+    assert_eq!(
+        to_html("Check #-tag today").unwrap(),
+        "<p>Check #-tag today</p>\n"
+    );
+    assert_eq!(
+        to_html("Check #--tag today").unwrap(),
+        "<p>Check #--tag today</p>\n"
+    );
 
     let ast_json = to_ast("#-tag").unwrap();
     assert!(!ast_json.contains(r#""type":"tag""#));
@@ -42,9 +48,18 @@ fn test_tag_starting_with_hyphen_rejection() {
 
 #[test]
 fn test_tag_uppercase_rejection() {
-    assert_eq!(to_html("Check #Rust today").unwrap(), "<p>Check #Rust today</p>\n");
-    assert_eq!(to_html("Check #C-Sharp today").unwrap(), "<p>Check #C-Sharp today</p>\n");
-    assert_eq!(to_html("Check #TAG today").unwrap(), "<p>Check #TAG today</p>\n");
+    assert_eq!(
+        to_html("Check #Rust today").unwrap(),
+        "<p>Check #Rust today</p>\n"
+    );
+    assert_eq!(
+        to_html("Check #C-Sharp today").unwrap(),
+        "<p>Check #C-Sharp today</p>\n"
+    );
+    assert_eq!(
+        to_html("Check #TAG today").unwrap(),
+        "<p>Check #TAG today</p>\n"
+    );
 
     let ast_json = to_ast("#Rust").unwrap();
     assert!(!ast_json.contains(r#""type":"tag""#));
@@ -53,8 +68,14 @@ fn test_tag_uppercase_rejection() {
 #[test]
 fn test_tag_underscore_rejection() {
     // Tags cannot contain underscores
-    assert_eq!(to_html("Check #tag_name today").unwrap(), "<p>Check #tag_name today</p>\n");
-    assert_eq!(to_html("Check #_tag today").unwrap(), "<p>Check #_tag today</p>\n");
+    assert_eq!(
+        to_html("Check #tag_name today").unwrap(),
+        "<p>Check #tag_name today</p>\n"
+    );
+    assert_eq!(
+        to_html("Check #_tag today").unwrap(),
+        "<p>Check #_tag today</p>\n"
+    );
 
     let ast_json = to_ast("#tag_name").unwrap();
     assert!(!ast_json.contains(r#""type":"tag""#));
@@ -65,7 +86,10 @@ fn test_tag_too_long_rejection() {
     // 33 characters: too long
     let t33 = "a".repeat(33);
     let input = format!("Check #{t33} today");
-    assert_eq!(to_html(&input).unwrap(), format!("<p>Check #{t33} today</p>\n"));
+    assert_eq!(
+        to_html(&input).unwrap(),
+        format!("<p>Check #{t33} today</p>\n")
+    );
 
     let ast_json = to_ast(&input).unwrap();
     assert!(!ast_json.contains(r#""type":"tag""#));

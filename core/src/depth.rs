@@ -1,5 +1,5 @@
-use comrak::nodes::AstNode;
 use crate::error::MarkstoneError;
+use comrak::nodes::AstNode;
 
 /// Maximum permitted block nesting depth.
 pub const MAX_BLOCK_DEPTH: usize = 64;
@@ -41,7 +41,7 @@ pub fn check_block_depth<'a>(root: &'a AstNode<'a>) -> Result<(), MarkstoneError
 #[cfg(test)]
 mod tests {
     use super::*;
-    use comrak::{parse_document, Arena, Options};
+    use comrak::{Arena, Options, parse_document};
 
     #[test]
     fn test_depth_within_limit() {

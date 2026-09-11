@@ -17,17 +17,20 @@ fn test_rust_binding_conformance_all_77_cases_308_checks() {
                     .unwrap_or_else(|e| panic!("markstone::to_ast failed on {}: {e:?}", case.name))
                     .into_bytes(),
                 Mode::ActosHtml => markstone::actos::to_html(&case.input)
-                    .unwrap_or_else(|e| panic!("markstone::actos::to_html failed on {}: {e:?}", case.name))
+                    .unwrap_or_else(|e| {
+                        panic!("markstone::actos::to_html failed on {}: {e:?}", case.name)
+                    })
                     .into_bytes(),
                 Mode::ActosAst => markstone::actos::to_ast(&case.input)
-                    .unwrap_or_else(|e| panic!("markstone::actos::to_ast failed on {}: {e:?}", case.name))
+                    .unwrap_or_else(|e| {
+                        panic!("markstone::actos::to_ast failed on {}: {e:?}", case.name)
+                    })
                     .into_bytes(),
             };
 
-            let expected = case
-                .expected
-                .get(&mode)
-                .unwrap_or_else(|| panic!("Missing expected golden for case {} mode {mode}", case.name));
+            let expected = case.expected.get(&mode).unwrap_or_else(|| {
+                panic!("Missing expected golden for case {} mode {mode}", case.name)
+            });
 
             if &actual != expected {
                 panic!(
@@ -74,5 +77,8 @@ fn test_rust_binding_constants_and_errors() {
     let err_ast = markstone::to_ast_bytes(&invalid_utf8).unwrap_err();
     assert!(matches!(err_ast, markstone::MarkstoneError::InvalidUtf8));
     let err_actos_ast = markstone::actos::to_ast_bytes(&invalid_utf8).unwrap_err();
-    assert!(matches!(err_actos_ast, markstone::MarkstoneError::InvalidUtf8));
+    assert!(matches!(
+        err_actos_ast,
+        markstone::MarkstoneError::InvalidUtf8
+    ));
 }

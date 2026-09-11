@@ -80,7 +80,10 @@ fn test_vbscript_and_file_urls_degraded() {
 fn test_degraded_link_preserves_formatting() {
     let input = "[**Bold warning** and *italic*](javascript:alert(1))\n";
     let html = to_html(input).unwrap();
-    assert_eq!(html, "<p><strong>Bold warning</strong> and <em>italic</em></p>\n");
+    assert_eq!(
+        html,
+        "<p><strong>Bold warning</strong> and <em>italic</em></p>\n"
+    );
     assert!(!html.contains("<a"));
 }
 
@@ -102,7 +105,10 @@ fn test_code_block_language_tag_injection() {
     let html = to_html(input).unwrap();
     assert!(!html.contains("<script"));
     assert!(!html.contains("alert(1)"));
-    assert_eq!(html, "<pre><code class=\"language-scriptalert1script\">code\n</code></pre>\n");
+    assert_eq!(
+        html,
+        "<pre><code class=\"language-scriptalert1script\">code\n</code></pre>\n"
+    );
 
     let input_attr = "```\" onclick=\"alert(1)\"\ncode\n```\n";
     let html = to_html(input_attr).unwrap();
@@ -130,7 +136,11 @@ fn test_bidi_and_invisible_control_characters_stripped() {
 fn test_external_links_have_rel_and_relative_do_not() {
     let input = "[Ext](https://example.com) [Rel](/page)\n";
     let html = to_html(input).unwrap();
-    assert!(html.contains("<a href=\"https://example.com\" rel=\"nofollow noopener noreferrer\">Ext</a>"));
+    assert!(
+        html.contains(
+            "<a href=\"https://example.com\" rel=\"nofollow noopener noreferrer\">Ext</a>"
+        )
+    );
     assert!(html.contains("<a href=\"/page\">Rel</a>"));
     assert!(!html.contains("<a href=\"/page\" rel"));
 }

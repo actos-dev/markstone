@@ -1,7 +1,7 @@
-use std::borrow::Cow;
 use pyo3::exceptions::{PyException, PyTypeError};
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
+use std::borrow::Cow;
 
 pyo3::create_exception!(markstone, MarkstoneError, PyException);
 pyo3::create_exception!(markstone, InputTooLargeError, MarkstoneError);
@@ -32,9 +32,8 @@ fn extract_input<'a>(input: &'a Bound<'_, PyAny>) -> PyResult<Cow<'a, str>> {
     if let Ok(cow) = input.extract::<Cow<'a, str>>() {
         Ok(cow)
     } else if let Ok(py_bytes) = input.downcast::<PyBytes>() {
-        let s = std::str::from_utf8(py_bytes.as_bytes()).map_err(|_| {
-            InvalidUtf8Error::new_err("invalid UTF-8 byte sequence")
-        })?;
+        let s = std::str::from_utf8(py_bytes.as_bytes())
+            .map_err(|_| InvalidUtf8Error::new_err("invalid UTF-8 byte sequence"))?;
         Ok(Cow::Borrowed(s))
     } else {
         Err(PyTypeError::new_err("input must be a string or bytes"))
@@ -75,8 +74,14 @@ fn _markstone(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("AST_SCHEMA_VERSION", AST_SCHEMA_VERSION)?;
 
     m.add("MarkstoneError", m.py().get_type::<MarkstoneError>())?;
-    m.add("InputTooLargeError", m.py().get_type::<InputTooLargeError>())?;
-    m.add("DepthExceededError", m.py().get_type::<DepthExceededError>())?;
+    m.add(
+        "InputTooLargeError",
+        m.py().get_type::<InputTooLargeError>(),
+    )?;
+    m.add(
+        "DepthExceededError",
+        m.py().get_type::<DepthExceededError>(),
+    )?;
     m.add("InvalidUtf8Error", m.py().get_type::<InvalidUtf8Error>())?;
 
     m.add_function(wrap_pyfunction!(py_to_html, m)?)?;

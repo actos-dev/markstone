@@ -29,7 +29,12 @@ pub const fn is_invisible_or_bidi(c: char) -> bool {
 #[must_use]
 pub fn strip_invisible_and_bidi(input: &str) -> Cow<'_, str> {
     if input.chars().any(is_invisible_or_bidi) {
-        Cow::Owned(input.chars().filter(|c| !is_invisible_or_bidi(*c)).collect())
+        Cow::Owned(
+            input
+                .chars()
+                .filter(|c| !is_invisible_or_bidi(*c))
+                .collect(),
+        )
     } else {
         Cow::Borrowed(input)
     }
@@ -85,7 +90,8 @@ pub fn validate_url(raw_url: &str) -> Option<UrlKind> {
             let scheme = clean[..cp].to_ascii_lowercase();
             let mut chars = scheme.chars();
             let first_ok = chars.next().is_some_and(|c| c.is_ascii_alphabetic());
-            let rest_ok = chars.all(|c| c.is_ascii_alphanumeric() || c == '+' || c == '-' || c == '.');
+            let rest_ok =
+                chars.all(|c| c.is_ascii_alphanumeric() || c == '+' || c == '-' || c == '.');
 
             if first_ok && rest_ok {
                 return match scheme.as_str() {
@@ -143,10 +149,19 @@ mod tests {
     #[test]
     fn test_validate_url() {
         assert_eq!(validate_url("https://example.com"), Some(UrlKind::External));
-        assert_eq!(validate_url("http://example.com/page"), Some(UrlKind::External));
+        assert_eq!(
+            validate_url("http://example.com/page"),
+            Some(UrlKind::External)
+        );
         assert_eq!(validate_url("HTTPS://EXAMPLE.COM"), Some(UrlKind::External));
-        assert_eq!(validate_url("mailto:alice@example.com"), Some(UrlKind::Mailto));
-        assert_eq!(validate_url("//cdn.example.com/lib.js"), Some(UrlKind::External));
+        assert_eq!(
+            validate_url("mailto:alice@example.com"),
+            Some(UrlKind::Mailto)
+        );
+        assert_eq!(
+            validate_url("//cdn.example.com/lib.js"),
+            Some(UrlKind::External)
+        );
         assert_eq!(validate_url("/path/to/page"), Some(UrlKind::Relative));
         assert_eq!(validate_url("./path/to/page"), Some(UrlKind::Relative));
         assert_eq!(validate_url("../path/to/page"), Some(UrlKind::Relative));
@@ -172,8 +187,14 @@ mod tests {
         assert_eq!(sanitize_code_block_lang("rust"), Some("rust".to_string()));
         assert_eq!(sanitize_code_block_lang("c++"), Some("c++".to_string()));
         assert_eq!(sanitize_code_block_lang("c#"), Some("c".to_string()));
-        assert_eq!(sanitize_code_block_lang("python extra metadata"), Some("python".to_string()));
-        assert_eq!(sanitize_code_block_lang("<script>"), Some("script".to_string()));
+        assert_eq!(
+            sanitize_code_block_lang("python extra metadata"),
+            Some("python".to_string())
+        );
+        assert_eq!(
+            sanitize_code_block_lang("<script>"),
+            Some("script".to_string())
+        );
         assert_eq!(sanitize_code_block_lang("\" onclick=\"alert(1)\""), None);
         assert_eq!(sanitize_code_block_lang(""), None);
     }

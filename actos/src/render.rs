@@ -1,5 +1,5 @@
 use markstone_core::ast::{AstDocument, Node};
-use markstone_core::sanitize::{validate_url, UrlKind};
+use markstone_core::sanitize::{UrlKind, validate_url};
 
 /// Escapes HTML special characters: `&`, `<`, `>`, `"`.
 pub fn escape_html(s: &str, out: &mut String) {
@@ -79,14 +79,7 @@ fn render_nodes_non_recursive<'a>(
     let mut stack: Vec<RenderFrame<'a>> = Vec::new();
 
     // Entering root
-    render_node_enter(
-        root_node,
-        initial_tight_list,
-        false,
-        &[],
-        0,
-        out,
-    );
+    render_node_enter(root_node, initial_tight_list, false, &[], 0, out);
 
     if root_node.children().is_some() {
         stack.push(RenderFrame {
@@ -117,7 +110,9 @@ fn render_nodes_non_recursive<'a>(
             frame.next_child_idx += 1;
 
             // Handle footnotes collection at document root level
-            if matches!(node, Node::Document { .. }) && matches!(child, Node::FootnoteDefinition { .. }) {
+            if matches!(node, Node::Document { .. })
+                && matches!(child, Node::FootnoteDefinition { .. })
+            {
                 collected_footnotes.push(child);
                 continue;
             }
@@ -333,7 +328,12 @@ fn render_node_enter(
             }
             out.push('>');
         }
-        Node::Image { url, title, children, .. } => {
+        Node::Image {
+            url,
+            title,
+            children,
+            ..
+        } => {
             out.push_str("<img src=\"");
             escape_href(url, out);
             out.push_str("\" alt=\"");
@@ -441,7 +441,9 @@ fn render_leaf_node(
             escape_html(value, out);
             out.push_str("</code>");
         }
-        Node::CodeBlock { language, value, .. } => {
+        Node::CodeBlock {
+            language, value, ..
+        } => {
             if language.is_empty() {
                 out.push_str("<pre><code>");
             } else {

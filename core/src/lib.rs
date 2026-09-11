@@ -9,13 +9,11 @@ pub mod error;
 pub mod render;
 pub mod sanitize;
 
-pub use ast::{
-    parse_to_ast_document, to_ast, to_ast_bytes, AST_SCHEMA_VERSION, AstDocument, Node,
-};
+pub use ast::{AST_SCHEMA_VERSION, AstDocument, Node, parse_to_ast_document, to_ast, to_ast_bytes};
 pub use depth::MAX_BLOCK_DEPTH;
 pub use error::MarkstoneError;
-pub use render::{comrak_options, to_html, to_html_bytes, MAX_INPUT_SIZE};
-pub use sanitize::{is_invisible_or_bidi, strip_invisible_and_bidi, validate_url, UrlKind};
+pub use render::{MAX_INPUT_SIZE, comrak_options, to_html, to_html_bytes};
+pub use sanitize::{UrlKind, is_invisible_or_bidi, strip_invisible_and_bidi, validate_url};
 
 /// Markstone core version string.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

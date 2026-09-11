@@ -1,5 +1,5 @@
 use markstone_core::{
-    parse_to_ast_document, to_ast, to_ast_bytes, AST_SCHEMA_VERSION, AstDocument, Node,
+    AST_SCHEMA_VERSION, AstDocument, Node, parse_to_ast_document, to_ast, to_ast_bytes,
 };
 
 #[test]
@@ -19,7 +19,10 @@ fn test_schema_version_and_document_structure() {
 
     // Invalid UTF-8 bytes error
     let invalid = b"\xff\xfe\xfd";
-    assert_eq!(to_ast_bytes(invalid), Err(markstone_core::MarkstoneError::InvalidUtf8));
+    assert_eq!(
+        to_ast_bytes(invalid),
+        Err(markstone_core::MarkstoneError::InvalidUtf8)
+    );
 }
 
 #[test]
@@ -261,7 +264,8 @@ fn test_thematic_break() {
 
 #[test]
 fn test_tables() {
-    let input = "| Left | Center | Right | None |\n| :--- | :----: | ----: | ---- |\n| 1 | 2 | 3 | 4 |\n";
+    let input =
+        "| Left | Center | Right | None |\n| :--- | :----: | ----: | ---- |\n| 1 | 2 | 3 | 4 |\n";
     let json = to_ast(input).unwrap();
     let doc: AstDocument = serde_json::from_str(&json).unwrap();
 
@@ -324,7 +328,8 @@ fn test_inlines_emphasis_strong_strikethrough() {
 
 #[test]
 fn test_links_and_images() {
-    let input = "[Actos](https://actos.org \"Actos Platform\")\n\n![Logo](/logo.png \"Site Logo\")\n";
+    let input =
+        "[Actos](https://actos.org \"Actos Platform\")\n\n![Logo](/logo.png \"Site Logo\")\n";
     let json = to_ast(input).unwrap();
     let doc: AstDocument = serde_json::from_str(&json).unwrap();
 

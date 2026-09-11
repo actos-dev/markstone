@@ -38,7 +38,9 @@ fn test_normal_conversions_html_and_ast() {
         let s = std::str::from_utf8(std::slice::from_raw_parts(out as *const u8, out_len)).unwrap();
         assert!(s.contains("<h1>Hello ABI</h1>"));
         assert!(s.contains("<strong>bold</strong>"));
-        assert!(s.contains(r#"<a href="https://example.com" rel="nofollow noopener noreferrer">link</a>"#));
+        assert!(s.contains(
+            r#"<a href="https://example.com" rel="nofollow noopener noreferrer">link</a>"#
+        ));
         assert!(s.contains("<table>"));
         assert!(s.contains("@alice and #rust"));
         assert!(!s.contains(r#"href="/u/alice""#));

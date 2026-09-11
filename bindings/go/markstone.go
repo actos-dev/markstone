@@ -7,6 +7,9 @@ import (
 	"github.com/dethrandir/markstone/bindings/go/internal/loader"
 )
 
+// PackageVersion is the semver version string of markstone.
+const PackageVersion = "0.1.0"
+
 // ASTSchemaVersion is the AST JSON schema version. Increments when the schema breaks.
 const ASTSchemaVersion = 1
 

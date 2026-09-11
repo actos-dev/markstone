@@ -1,11 +1,11 @@
 use comrak::nodes::{AstNode, ListType, NodeValue, TableAlignment};
-use comrak::{parse_document, Arena};
+use comrak::{Arena, parse_document};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
 use crate::depth::check_block_depth;
 use crate::error::MarkstoneError;
-use crate::render::{comrak_options, MAX_INPUT_SIZE};
+use crate::render::{MAX_INPUT_SIZE, comrak_options};
 use crate::sanitize::{sanitize_code_block_lang, strip_invisible_and_bidi, validate_url};
 
 /// Current AST JSON schema version. Increments when the schema breaks.
@@ -387,9 +387,7 @@ fn write_node_header(node: &Node, out: &mut String) {
             write_json_str(out, value);
             write_pos_field(out, pos);
         }
-        Node::ThematicBreak { pos }
-        | Node::SoftBreak { pos }
-        | Node::LineBreak { pos } => {
+        Node::ThematicBreak { pos } | Node::SoftBreak { pos } | Node::LineBreak { pos } => {
             write_pos_field(out, pos);
         }
         Node::Table {
@@ -604,11 +602,7 @@ fn convert_single_node<'a>(
         NodeValue::BlockQuote => Ok(ConvertResult::Single(Node::BlockQuote { pos, children })),
         NodeValue::List(ref nl) => {
             let ordered = nl.list_type == ListType::Ordered;
-            let start = if ordered {
-                Some(nl.start as u32)
-            } else {
-                None
-            };
+            let start = if ordered { Some(nl.start as u32) } else { None };
             Ok(ConvertResult::Single(Node::List {
                 ordered,
                 start,
@@ -637,12 +631,15 @@ fn convert_single_node<'a>(
             let alignments = nt
                 .alignments
                 .iter()
-                .map(|a| match a {
-                    TableAlignment::None => "none",
-                    TableAlignment::Left => "left",
-                    TableAlignment::Center => "center",
-                    TableAlignment::Right => "right",
-                }.to_string())
+                .map(|a| {
+                    match a {
+                        TableAlignment::None => "none",
+                        TableAlignment::Left => "left",
+                        TableAlignment::Center => "center",
+                        TableAlignment::Right => "right",
+                    }
+                    .to_string()
+                })
                 .collect();
             Ok(ConvertResult::Single(Node::Table {
                 alignments,
