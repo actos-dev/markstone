@@ -1,0 +1,1 @@
+{"schema":1,"root":{"type":"document","pos":[1,1,1,69],"children":[{"type":"paragraph","pos":[1,1,1,69],"children":[{"type":"text","value":"Valid #rust-lang and #a-b-c, but invalid #--bad starting with hyphen.","pos":[1,1,1,69]}]}]}}

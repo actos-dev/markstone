@@ -3,6 +3,7 @@ members = [
     "core",
     "actos",
     "abi",
+    "conformance/runner",
 ]
 resolver = "3"
 

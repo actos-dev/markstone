@@ -1,0 +1,26 @@
+[package]
+name = "markstone-conformance"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Conformance test suite runner and generator for markstone"
+publish = false
+
+[lib]
+name = "markstone_conformance"
+path = "src/lib.rs"
+
+[[bin]]
+name = "markstone-conformance-runner"
+path = "src/main.rs"
+
+[[bin]]
+name = "generate-conformance"
+path = "../../scripts/generate_conformance.rs"
+
+[dependencies]
+markstone-core = { path = "../../core", version = "0.1.0" }
+markstone-actos = { path = "../../actos", version = "0.1.0" }

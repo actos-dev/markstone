@@ -302,6 +302,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "markstone-conformance"
+version = "0.1.0"
+dependencies = [
+ "markstone-actos",
+ "markstone-core",
+]
+
+[[package]]
 name = "markstone-core"
 version = "0.1.0"
 dependencies = [

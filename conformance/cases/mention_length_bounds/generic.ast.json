@@ -1,0 +1,1 @@
+{"schema":1,"root":{"type":"document","pos":[1,1,2,45],"children":[{"type":"paragraph","pos":[1,1,2,45],"children":[{"type":"text","value":"Min length: @abc","pos":[1,1,1,16]},{"type":"soft_break","pos":[1,17,1,17]},{"type":"text","value":"Max length: @a1234567890123456789012345678901","pos":[2,1,2,45]}]}]}}

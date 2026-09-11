@@ -1,0 +1,1 @@
+{"schema":1,"root":{"type":"document","pos":[1,1,1,99],"children":[{"type":"paragraph","pos":[1,1,1,99],"children":[{"type":"text","value":"Text with ","pos":[1,1,1,10]},{"type":"text","value":"inline html","pos":[1,34,1,44]},{"type":"text","value":" and ","pos":[1,52,1,56]},{"type":"text","value":" stripped.","pos":[1,90,1,99]}]}]}}

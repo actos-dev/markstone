@@ -1,0 +1,98 @@
+[
+  {
+    "section": "Thematic breaks",
+    "example": 1,
+    "markdown": "***\n---\n___\n",
+    "html": "<hr />\n<hr />\n<hr />\n"
+  },
+  {
+    "section": "ATX headings",
+    "example": 2,
+    "markdown": "# foo\n## foo\n### foo\n#### foo\n##### foo\n###### foo\n",
+    "html": "<h1>foo</h1>\n<h2>foo</h2>\n<h3>foo</h3>\n<h4>foo</h4>\n<h5>foo</h5>\n<h6>foo</h6>\n"
+  },
+  {
+    "section": "Setext headings",
+    "example": 3,
+    "markdown": "Foo *bar*\n=========\n\nFoo *bar*\n---------\n",
+    "html": "<h1>Foo <em>bar</em></h1>\n<h2>Foo <em>bar</em></h2>\n"
+  },
+  {
+    "section": "Indented code blocks",
+    "example": 4,
+    "markdown": "    a simple\n      indented code block\n",
+    "html": "<pre><code>a simple\n  indented code block\n</code></pre>\n"
+  },
+  {
+    "section": "Fenced code blocks",
+    "example": 5,
+    "markdown": "```rust\nfn main() {\n    println!(\"hello\");\n}\n```\n",
+    "html": "<pre><code class=\"language-rust\">fn main() {\n    println!(&quot;hello&quot;);\n}\n</code></pre>\n"
+  },
+  {
+    "section": "Paragraphs",
+    "example": 6,
+    "markdown": "aaa\n\nbbb\n",
+    "html": "<p>aaa</p>\n<p>bbb</p>\n"
+  },
+  {
+    "section": "Block quotes",
+    "example": 7,
+    "markdown": "> # Foo\n> bar\n> baz\n",
+    "html": "<blockquote>\n<h1>Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>\n"
+  },
+  {
+    "section": "List items",
+    "example": 8,
+    "markdown": "- foo\n- bar\n",
+    "html": "<ul>\n<li>foo</li>\n<li>bar</li>\n</ul>\n"
+  },
+  {
+    "section": "Lists ordered",
+    "example": 9,
+    "markdown": "1. foo\n2. bar\n",
+    "html": "<ol>\n<li>foo</li>\n<li>bar</li>\n</ol>\n"
+  },
+  {
+    "section": "Code spans",
+    "example": 10,
+    "markdown": "`foo`\n",
+    "html": "<p><code>foo</code></p>\n"
+  },
+  {
+    "section": "Emphasis and strong emphasis",
+    "example": 11,
+    "markdown": "*foo bar*\n\n**foo bar**\n",
+    "html": "<p><em>foo bar</em></p>\n<p><strong>foo bar</strong></p>\n"
+  },
+  {
+    "section": "Links",
+    "example": 12,
+    "markdown": "[link](/uri \"title\")\n",
+    "html": "<p><a href=\"/uri\" title=\"title\">link</a></p>\n"
+  },
+  {
+    "section": "Images",
+    "example": 13,
+    "markdown": "![foo](/url \"title\")\n",
+    "html": "<p><img src=\"/url\" alt=\"foo\" title=\"title\" /></p>\n"
+  },
+  {
+    "section": "Autolinks",
+    "example": 14,
+    "markdown": "<https://foo.bar.baz>\n",
+    "html": "<p><a href=\"https://foo.bar.baz\" rel=\"nofollow noopener noreferrer\">https://foo.bar.baz</a></p>\n"
+  },
+  {
+    "section": "Hard line breaks",
+    "example": 15,
+    "markdown": "foo  \nbaz\n",
+    "html": "<p>foo<br />\nbaz</p>\n"
+  },
+  {
+    "section": "Soft line breaks",
+    "example": 16,
+    "markdown": "foo\nbaz\n",
+    "html": "<p>foo\nbaz</p>\n"
+  }
+]

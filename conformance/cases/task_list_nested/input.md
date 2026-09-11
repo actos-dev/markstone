@@ -1,0 +1,3 @@
+- [ ] Root goal
+  - [x] Subtask A
+  - [ ] Subtask B

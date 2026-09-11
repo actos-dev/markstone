@@ -1,0 +1,1 @@
+{"schema":1,"root":{"type":"document","pos":[1,1,1,50],"children":[{"type":"paragraph","pos":[1,1,1,50],"children":[{"type":"text","value":"Anchor foo#bar is untouched, but (","pos":[1,1,1,34]},{"type":"tag","name":"rust","text":"#rust","pos":[1,35,1,39]},{"type":"text","value":") is valid.","pos":[1,40,1,50]}]}]}}

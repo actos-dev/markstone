@@ -1,0 +1,1 @@
+{"schema":1,"root":{"type":"document","pos":[1,1,1,41],"children":[{"type":"paragraph","pos":[1,1,1,41],"children":[{"type":"text","value":"Read ","pos":[1,1,1,5]},{"type":"text","value":"Passwd","pos":[1,7,1,12]},{"type":"text","value":" secret.","pos":[1,34,1,41]}]}]}}

@@ -1,0 +1,1 @@
+{"schema":1,"root":{"type":"document","pos":[1,1,1,53],"children":[{"type":"paragraph","pos":[1,1,1,53],"children":[{"type":"text","value":"Send feedback to ","pos":[1,1,1,17]},{"type":"link","url":"mailto:support@actos.app","title":"","pos":[1,18,1,52],"children":[{"type":"text","value":"Support","pos":[1,19,1,25]}]},{"type":"text","value":".","pos":[1,53,1,53]}]}]}}

@@ -1,0 +1,1 @@
+{"schema":1,"root":{"type":"document","pos":[1,1,1,46],"children":[{"type":"paragraph","pos":[1,1,1,46],"children":[{"type":"code","value":"<div> & \"quotes\" & <script>alert(1)</script>","pos":[1,1,1,46]}]}]}}

@@ -1,0 +1,1 @@
+{"schema":1,"root":{"type":"document","pos":[1,1,1,44],"children":[{"type":"paragraph","pos":[1,1,1,44],"children":[{"type":"text","value":"Insecure ","pos":[1,1,1,9]},{"type":"link","url":"http://example.com","title":"","pos":[1,10,1,38],"children":[{"type":"text","value":"Example","pos":[1,11,1,17]}]},{"type":"text","value":" link.","pos":[1,39,1,44]}]}]}}

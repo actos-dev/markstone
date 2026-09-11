@@ -1,0 +1,1 @@
+{"schema":1,"root":{"type":"document","pos":[1,1,2,42],"children":[{"type":"paragraph","pos":[1,1,2,42],"children":[{"type":"text","value":"Min tag: #a","pos":[1,1,1,11]},{"type":"soft_break","pos":[1,12,1,12]},{"type":"text","value":"Max tag: #a1234567890123456789012345678901","pos":[2,1,2,42]}]}]}}

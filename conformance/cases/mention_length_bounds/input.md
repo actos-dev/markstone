@@ -1,0 +1,2 @@
+Min length: @abc
+Max length: @a1234567890123456789012345678901

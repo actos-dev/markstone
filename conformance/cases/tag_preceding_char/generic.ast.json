@@ -1,0 +1,1 @@
+{"schema":1,"root":{"type":"document","pos":[1,1,1,50],"children":[{"type":"paragraph","pos":[1,1,1,50],"children":[{"type":"text","value":"Anchor foo#bar is untouched, but (#rust) is valid.","pos":[1,1,1,50]}]}]}}

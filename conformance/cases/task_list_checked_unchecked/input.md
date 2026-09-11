@@ -1,0 +1,3 @@
+- [ ] Incomplete task
+- [x] Completed task
+- [X] Also completed with capital X

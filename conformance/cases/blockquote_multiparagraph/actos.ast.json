@@ -1,0 +1,1 @@
+{"schema":1,"root":{"type":"document","pos":[1,1,3,28],"children":[{"type":"block_quote","pos":[1,1,3,28],"children":[{"type":"paragraph","pos":[1,3,1,27],"children":[{"type":"text","value":"First paragraph in quote.","pos":[1,3,1,27]}]},{"type":"paragraph","pos":[3,3,3,28],"children":[{"type":"text","value":"Second paragraph in quote.","pos":[3,3,3,28]}]}]}]}}
