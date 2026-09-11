@@ -26,7 +26,7 @@ pub extern "C" fn markstone_version() -> *const c_char {
 /// AST JSON schema version. Increments when the schema breaks.
 #[unsafe(no_mangle)]
 pub extern "C" fn markstone_ast_schema_version() -> u32 {
-    1
+    core::AST_SCHEMA_VERSION
 }
 
 /// Releases a buffer returned by markstone_to_*. Does nothing if ptr is NULL.
