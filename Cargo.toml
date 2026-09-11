@@ -1,0 +1,17 @@
+[workspace]
+members = [
+    "core",
+    "actos",
+    "abi",
+]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85.0"
+license = "MIT"
+authors = ["Actos Authors"]
+repository = "https://github.com/actos-app/markstone"
+description = "Fast, safe Markdown-to-HTML and AST engine with Actos extensions and multi-language bindings"
+readme = "README.md"

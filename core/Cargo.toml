@@ -1,0 +1,14 @@
+[package]
+name = "markstone-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Core Markdown-to-HTML and AST engine for markstone"
+readme = "../README.md"
+
+[dependencies]
+
+[dev-dependencies]

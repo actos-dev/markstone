@@ -1,0 +1,20 @@
+[package]
+name = "markstone-abi"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "C ABI shared and static library for markstone"
+readme = "../README.md"
+
+[lib]
+name = "markstone"
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[dependencies]
+markstone-core = { path = "../core", version = "0.1.0" }
+markstone-actos = { path = "../actos", version = "0.1.0" }
+
+[dev-dependencies]

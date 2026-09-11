@@ -1,0 +1,15 @@
+[package]
+name = "markstone-actos"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Actos-specific extensions (@mentions, #tags) for markstone"
+readme = "../README.md"
+
+[dependencies]
+markstone-core = { path = "../core", version = "0.1.0" }
+
+[dev-dependencies]
