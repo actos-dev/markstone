@@ -1,0 +1,21 @@
+[package]
+name = "markstone-node"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Node.js native addon for markstone"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+markstone-core = { path = "../../core" }
+markstone-actos = { path = "../../actos" }
+napi = { version = "3", default-features = false, features = ["napi4"] }
+napi-derive = "3"
+
+[build-dependencies]
+napi-build = "2"

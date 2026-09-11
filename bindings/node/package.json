@@ -1,0 +1,61 @@
+{
+  "name": "markstone",
+  "version": "0.1.0",
+  "description": "Fast, safe Markdown-to-HTML and AST engine with Actos extensions for Node.js and the browser",
+  "type": "module",
+  "main": "index.js",
+  "browser": "browser.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "node": {
+        "types": "./index.d.ts",
+        "default": "./index.js"
+      },
+      "browser": {
+        "types": "./browser.d.ts",
+        "default": "./browser.js"
+      },
+      "default": {
+        "types": "./index.d.ts",
+        "default": "./fallback.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "browser.js",
+    "browser.d.ts",
+    "fallback.js",
+    "markstone.node",
+    "wasm/"
+  ],
+  "scripts": {
+    "build:native": "cargo build --release -p markstone-node && cp ../../target/release/libmarkstone_node.so ./markstone.node",
+    "build:wasm": "npx wasm-pack build ../wasm --target web --out-dir ../node/wasm && rm -f wasm/.gitignore",
+    "build": "npm run build:native && npm run build:wasm",
+    "test": "node --test test/index.test.js"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/actos-app/markstone"
+  },
+  "keywords": [
+    "markdown",
+    "commonmark",
+    "gfm",
+    "sanitizer",
+    "html",
+    "ast",
+    "actos"
+  ]
+}

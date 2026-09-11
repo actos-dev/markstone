@@ -3,5 +3,6 @@ fuzz/target/
 __pycache__/
 *.pyc
 *.so
+*.node
 .pytest_cache/
 

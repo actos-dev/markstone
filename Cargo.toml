@@ -6,6 +6,8 @@ members = [
     "conformance/runner",
     "bindings/rust",
     "bindings/python",
+    "bindings/wasm",
+    "bindings/node",
 ]
 resolver = "3"
 
