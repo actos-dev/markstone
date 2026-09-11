@@ -18,3 +18,4 @@ markstone-core = { path = "../core", version = "0.1.0" }
 markstone-actos = { path = "../actos", version = "0.1.0" }
 
 [dev-dependencies]
+serde_json = "1.0"

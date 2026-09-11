@@ -1,0 +1,35 @@
+[workspace]
+
+[package]
+name = "markstone-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+markstone-core = { path = "../core" }
+markstone-actos = { path = "../actos" }
+markstone = { package = "markstone-abi", path = "../abi" }
+serde_json = "1.0"
+
+[[bin]]
+name = "no_panic"
+path = "fuzz_targets/no_panic.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "limits_hold"
+path = "fuzz_targets/limits_hold.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "valid_utf8_output"
+path = "fuzz_targets/valid_utf8_output.rs"
+test = false
+doc = false
