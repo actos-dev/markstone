@@ -10,5 +10,7 @@ description = "Core Markdown-to-HTML and AST engine for markstone"
 readme = "../README.md"
 
 [dependencies]
+comrak = { version = "0.55.0", default-features = false }
 
 [dev-dependencies]
+ammonia = "4.0"
