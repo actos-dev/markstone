@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>12.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Markstone</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Actos Authors</Authors>
+    <Description>Fast, safe Markdown-to-HTML and AST engine with Actos extensions and multi-language bindings</Description>
+    <PackageTags>markdown;commonmark;gfm;html;ast;actos;parser;renderer</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/actos-app/markstone</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/actos-app/markstone</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <!--
+    The native library is packed per runtime identifier into runtimes/{rid}/native/.
+    For local builds, NativeLibraryResolver also probes the repository target directories.
+  -->
+  <ItemGroup>
+    <None Include="runtimes/**/*.*" Pack="true"
+          PackagePath="runtimes/%(RecursiveDir)%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Markstone.Tests" />
+    <InternalsVisibleTo Include="Markstone.ConformanceRunner" />
+  </ItemGroup>
+
+</Project>
