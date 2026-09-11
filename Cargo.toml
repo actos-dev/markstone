@@ -4,6 +4,8 @@ members = [
     "actos",
     "abi",
     "conformance/runner",
+    "bindings/rust",
+    "bindings/python",
 ]
 resolver = "3"
 

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "markstone"
+version = "0.1.0"
+description = "Fast, safe Markdown-to-HTML and AST engine with Actos extensions"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Actos Authors" }]
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Text Processing :: Markup :: Markdown",
+]
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+python-source = "."
+module-name = "markstone._markstone"

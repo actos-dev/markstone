@@ -1,0 +1,20 @@
+[package]
+name = "markstone-python"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85.0"
+license = "MIT"
+authors = ["Actos Authors"]
+repository = "https://github.com/actos-app/markstone"
+description = "Python bindings for markstone"
+readme = "README.md"
+publish = false
+
+[lib]
+name = "_markstone"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+pyo3 = { version = "0.24", features = ["abi3-py39", "extension-module"] }
+markstone-core = { path = "../../core", version = "0.1.0" }
+markstone-actos = { path = "../../actos", version = "0.1.0" }
