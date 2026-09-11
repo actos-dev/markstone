@@ -13,3 +13,6 @@ readme = "../README.md"
 markstone-core = { path = "../core", version = "0.1.0" }
 
 [dev-dependencies]
+ammonia = "4.0"
+regex = "1.10"
+serde_json = "1.0"
