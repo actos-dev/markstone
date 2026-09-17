@@ -3,6 +3,15 @@ use std::process::Command;
 
 #[test]
 fn test_c_integration_shared_and_static() {
+    // The link below uses unix conventions (-Wl,-rpath, LD_LIBRARY_PATH,
+    // -ldl/-lpthread). On Windows the runner pairs an MSVC-built staticlib
+    // with a MinGW compiler and would need the Win32 import libraries wired
+    // up by hand; the C ABI is exercised on Linux and macOS instead.
+    if cfg!(windows) {
+        eprintln!("C integration test is unix-only; skipping on Windows.");
+        return;
+    }
+
     let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let workspace_dir = manifest_dir.parent().expect("workspace parent dir");
     let target_debug = workspace_dir.join("target").join("debug");

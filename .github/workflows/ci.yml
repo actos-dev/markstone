@@ -126,6 +126,7 @@ jobs:
         run: |
           python -m venv .venv
           . .venv/bin/activate
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
           pip install maturin pytest
           cd bindings/python
           maturin develop
