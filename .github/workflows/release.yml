@@ -28,6 +28,7 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
+  ACTOS_BACKEND_DIR: ${{ github.workspace }}/actos-backend
 
 jobs:
   verify:
@@ -37,6 +38,15 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
+
+      # actos/tests/migration_sync.rs checks the mention and tag patterns
+      # against the backend's database constraints.
+      - name: Check out the backend migrations
+        uses: actions/checkout@v4
+        with:
+          repository: actos-dev/backend
+          path: actos-backend
+          sparse-checkout: migrations
 
       - uses: dtolnay/rust-toolchain@stable
         with:

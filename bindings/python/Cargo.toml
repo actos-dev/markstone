@@ -13,8 +13,12 @@ publish = false
 [lib]
 name = "_markstone"
 crate-type = ["cdylib", "rlib"]
+test = false
 
 [dependencies]
 pyo3 = { version = "0.24", features = ["abi3-py39", "extension-module"] }
 markstone-core = { path = "../../core", version = "0.1.0" }
 markstone-actos = { path = "../../actos", version = "0.1.0" }
+
+[build-dependencies]
+pyo3-build-config = "0.24"

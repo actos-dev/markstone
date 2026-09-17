@@ -1,14 +1,16 @@
 use markstone_actos::{TAG_PATTERN, USERNAME_PATTERN, is_valid_tag, is_valid_username};
 use regex::Regex;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 #[test]
 fn test_migration_regex_patterns_exact_match() {
-    let manifest_dir = env!("CARGO_MANIFEST_DIR");
-    let actors_sql_path =
-        Path::new(manifest_dir).join("../../actos-backend/migrations/0002_actors.up.sql");
-    let tags_sql_path =
-        Path::new(manifest_dir).join("../../actos-backend/migrations/0007_tags.up.sql");
+    // The backend checkout sits next to this repository locally; CI checks it
+    // out elsewhere and points ACTOS_BACKEND_DIR at it.
+    let backend_dir = std::env::var_os("ACTOS_BACKEND_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| Path::new(env!("CARGO_MANIFEST_DIR")).join("../../actos-backend"));
+    let actors_sql_path = backend_dir.join("migrations/0002_actors.up.sql");
+    let tags_sql_path = backend_dir.join("migrations/0007_tags.up.sql");
 
     // 1. Verify against 0002_actors.up.sql (ck_actors_username_format)
     if actors_sql_path.exists() {
