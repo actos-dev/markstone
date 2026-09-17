@@ -1,46 +1,46 @@
-import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
 
-const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-let nativeBinding = null;
+// Published packages carry one prebuilt addon per platform, named after the
+// platform tag below. `markstone.node` is a local build (`npm run
+// build:native`) and wins when present.
+function isMusl() {
+  if (process.platform !== 'linux') return false;
+  const report = process.report?.getReport?.();
+  const header = typeof report === 'string' ? JSON.parse(report).header : report?.header;
+  return !header?.glibcVersionRuntime;
+}
+
+function platformTag() {
+  const base = `${process.platform}-${process.arch}`;
+  if (process.platform !== 'linux') return base;
+  return `${base}-${isMusl() ? 'musl' : 'gnu'}`;
+}
 
 function loadNativeBinding() {
-  if (nativeBinding) return nativeBinding;
-
+  const tag = platformTag();
   const candidates = [
     path.join(__dirname, 'markstone.node'),
-    path.join(__dirname, `markstone.${process.platform}-${process.arch}.node`),
-    path.join(__dirname, `markstone.${process.platform}-${process.arch}-gnu.node`),
-    path.join(__dirname, `markstone.${process.platform}-${process.arch}-musl.node`),
-    path.join(__dirname, '../../target/release/libmarkstone_node.so'),
-    path.join(__dirname, '../../target/release/markstone_node.dll'),
-    path.join(__dirname, '../../target/release/libmarkstone_node.dylib'),
-    path.join(__dirname, '../../target/debug/libmarkstone_node.so'),
-    path.join(__dirname, '../../target/debug/markstone_node.dll'),
-    path.join(__dirname, '../../target/debug/libmarkstone_node.dylib'),
+    path.join(__dirname, `markstone.${tag}.node`),
   ];
 
+  const failures = [];
   for (const candidate of candidates) {
-    if (fs.existsSync(candidate)) {
-      try {
-        const addon = { exports: {} };
-        process.dlopen(addon, candidate);
-        nativeBinding = addon.exports;
-        return nativeBinding;
-      } catch (err) {
-        // Try next candidate
-      }
+    if (!fs.existsSync(candidate)) continue;
+    try {
+      const addon = { exports: {} };
+      process.dlopen(addon, candidate);
+      return addon.exports;
+    } catch (err) {
+      failures.push(`${path.basename(candidate)}: ${err.message}`);
     }
   }
 
-  throw new Error(
-    `Failed to load native markstone addon for ${process.platform}-${process.arch}. ` +
-    `Ensure prebuilt binaries are installed or build locally with cargo build.`
-  );
+  const detail = failures.length > 0 ? ` (${failures.join('; ')})` : '';
+  throw new Error(`markstone has no native addon for ${tag}${detail}`);
 }
 
 const binding = loadNativeBinding();

@@ -10,7 +10,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/dethrandir/markstone/bindings/go"
+	"github.com/actos-dev/markstone/bindings/go"
 )
 
 func findCasesDir(t *testing.T) string {

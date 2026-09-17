@@ -11,7 +11,7 @@
 
   <name>markstone</name>
   <description>Fast, secure CommonMark + GFM parser and Actos extensions via Foreign Function &amp; Memory API (FFM).</description>
-  <url>https://github.com/dethrandir/markstone</url>
+  <url>https://github.com/actos-dev/markstone</url>
 
   <licenses>
     <license>

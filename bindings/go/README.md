@@ -12,7 +12,7 @@ Go bindings for markstone: fast, safe Markdown-to-HTML and AST engine with Actos
 ## Installation
 
 ```bash
-go get github.com/dethrandir/markstone/bindings/go
+go get github.com/actos-dev/markstone/bindings/go
 ```
 
 ## Usage
@@ -24,8 +24,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/dethrandir/markstone/bindings/go"
-	"github.com/dethrandir/markstone/bindings/go/actos"
+	"github.com/actos-dev/markstone/bindings/go"
+	"github.com/actos-dev/markstone/bindings/go/actos"
 )
 
 func main() {

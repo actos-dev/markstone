@@ -10,7 +10,7 @@
     ".": {
       "node": {
         "types": "./index.d.ts",
-        "default": "./index.js"
+        "default": "./fallback.js"
       },
       "browser": {
         "types": "./browser.d.ts",
@@ -29,14 +29,20 @@
     "browser.js",
     "browser.d.ts",
     "fallback.js",
-    "markstone.node",
-    "wasm/"
+    "markstone.*.node",
+    "wasm/markstone_wasm.js",
+    "wasm/markstone_wasm.d.ts",
+    "wasm/markstone_wasm_bg.wasm",
+    "wasm/markstone_wasm_bg.wasm.d.ts",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build:native": "cargo build --release -p markstone-node && cp ../../target/release/libmarkstone_node.so ./markstone.node",
     "build:wasm": "npx wasm-pack build ../wasm --target web --out-dir ../node/wasm && rm -f wasm/.gitignore",
     "build": "npm run build:native && npm run build:wasm",
-    "test": "node --test test/index.test.js"
+    "test": "node --test test/index.test.js",
+    "prepack": "node -e \"require('node:fs').copyFileSync('../../LICENSE', 'LICENSE')\""
   },
   "devDependencies": {
     "@napi-rs/cli": "^3.0.0"
@@ -47,7 +53,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/actos-app/markstone"
+    "url": "git+https://github.com/actos-dev/markstone.git",
+    "directory": "bindings/node"
   },
   "keywords": [
     "markdown",

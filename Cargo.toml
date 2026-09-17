@@ -17,6 +17,13 @@ edition = "2024"
 rust-version = "1.85.0"
 license = "MIT"
 authors = ["Actos Authors"]
-repository = "https://github.com/actos-app/markstone"
+repository = "https://github.com/actos-dev/markstone"
 description = "Fast, safe Markdown-to-HTML and AST engine with Actos extensions and multi-language bindings"
 readme = "README.md"
+
+# Shipped binaries (the npm addon, the C ABI) are size-sensitive, and the
+# symbols they need are exported dynamically, so stripping is safe.
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

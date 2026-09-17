@@ -1,4 +1,4 @@
-module github.com/dethrandir/markstone/bindings/go
+module github.com/actos-dev/markstone/bindings/go
 
 go 1.26.5
 

@@ -119,6 +119,9 @@ def main():
         "bindings/node/package.json": lambda: extract_regex_version(
             "bindings/node/package.json", r'^"version"\s*:\s*"([^"]+)"'
         ),
+        "bindings/node/browser.js": lambda: extract_regex_version(
+            "bindings/node/browser.js", r"^export const version = '([^']+)';"
+        ),
         "bindings/jvm/pom.xml": lambda: extract_regex_version(
             "bindings/jvm/pom.xml", r'^<version>([^<]+)</version>'
         ),

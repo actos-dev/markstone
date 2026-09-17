@@ -1,6 +1,6 @@
 package actos
 
-import "github.com/dethrandir/markstone/bindings/go"
+import "github.com/actos-dev/markstone/bindings/go"
 
 // ASTSchemaVersion is the AST JSON schema version. Increments when the schema breaks.
 const ASTSchemaVersion = markstone.ASTSchemaVersion

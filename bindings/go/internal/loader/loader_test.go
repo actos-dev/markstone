@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/dethrandir/markstone/bindings/go/internal/embeds"
-	"github.com/dethrandir/markstone/bindings/go/internal/loader"
+	"github.com/actos-dev/markstone/bindings/go/internal/embeds"
+	"github.com/actos-dev/markstone/bindings/go/internal/loader"
 )
 
 func TestLoaderGetABI(t *testing.T) {

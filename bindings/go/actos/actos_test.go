@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dethrandir/markstone/bindings/go"
-	"github.com/dethrandir/markstone/bindings/go/actos"
+	"github.com/actos-dev/markstone/bindings/go"
+	"github.com/actos-dev/markstone/bindings/go/actos"
 )
 
 func TestActosPackage(t *testing.T) {

@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/dethrandir/markstone/bindings/go"
+	"github.com/actos-dev/markstone/bindings/go"
 )
 
 func main() {

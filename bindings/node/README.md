@@ -10,6 +10,10 @@ Uses native napi-rs addon on Node.js and WebAssembly (`wasm-bindgen`) in browser
 npm install markstone
 ```
 
+Prebuilt addons ship for Linux (x64 and arm64, glibc 2.28+ and musl), macOS
+(x64 and arm64) and Windows (x64 and arm64). On any other platform, Node
+falls back to the WebAssembly build with no extra setup.
+
 ## Usage
 
 ### Node.js (Native Addon)

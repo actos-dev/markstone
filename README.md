@@ -95,17 +95,31 @@ Prebuilt binaries are generated for nine release targets:
 
 ## 6. Language Bindings
 
-Seven distribution packages cover eight target languages:
+Seven distribution packages cover eight target languages. Rust and
+JavaScript are released; the others are built and tested in this repository
+but not yet published (see [ROADMAP.md](ROADMAP.md)).
 
-| Language | Binding Mechanism | Distribution Registry |
-|---|---|---|
-| **Rust** | Direct crate dependency (`core`, `actos`) | [crates.io](https://crates.io) |
-| **Python** | PyO3 + `abi3` wheels | [PyPI](https://pypi.org) |
-| **Node.js** | napi-rs native addon | [npm](https://npmjs.com) |
-| **Browser** | wasm-bindgen (packaged within npm package) | [npm](https://npmjs.com) |
-| **Go** | purego (no CGO required; embedded binary extraction) | Go Modules |
-| **Java / Kotlin** | Foreign Function & Memory API (FFM, JDK 22+) | Maven Central |
-| **C# (.NET)** | P/Invoke (`runtimes/{rid}/native/`) | NuGet |
+| Language | Binding Mechanism | Distribution | Status |
+|---|---|---|---|
+| **Rust** | Direct crate dependency (`core`, `actos`) | [`markstone`](https://crates.io/crates/markstone) on crates.io | Released |
+| **Node.js** | napi-rs native addon, WebAssembly fallback | [`markstone`](https://www.npmjs.com/package/markstone) on npm | Released |
+| **Browser** | wasm-bindgen (inside the npm package) | [`markstone`](https://www.npmjs.com/package/markstone) on npm | Released |
+| **Python** | PyO3 + `abi3` wheels | PyPI | Planned |
+| **Go** | purego (no CGO required; embedded binary extraction) | Go Modules | Planned |
+| **Java / Kotlin** | Foreign Function & Memory API (FFM, JDK 22+) | Maven Central | Planned |
+| **C# (.NET)** | P/Invoke (`runtimes/{rid}/native/`) | NuGet | Planned |
+
+### Installing
+
+```bash
+cargo add markstone
+npm install markstone
+```
+
+The npm package carries a prebuilt addon for Linux (x64 and arm64, glibc
+2.28+ and musl), macOS (x64 and arm64) and Windows (x64 and arm64). Any other
+platform, and every browser, gets the WebAssembly build. In the browser, call
+`await init()` once before rendering.
 
 ---
 

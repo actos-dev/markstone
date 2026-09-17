@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/dethrandir/markstone/bindings/go/internal/embeds"
+	"github.com/actos-dev/markstone/bindings/go/internal/embeds"
 	"github.com/ebitengine/purego"
 )
 

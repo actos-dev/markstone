@@ -4,7 +4,7 @@ import (
 	"runtime"
 	"unsafe"
 
-	"github.com/dethrandir/markstone/bindings/go/internal/loader"
+	"github.com/actos-dev/markstone/bindings/go/internal/loader"
 )
 
 // PackageVersion is the semver version string of markstone.

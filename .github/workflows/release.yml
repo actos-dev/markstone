@@ -1,512 +1,330 @@
+# Release markstone to crates.io and npm.
+#
+# A `v*` tag builds, tests and publishes. Running the workflow by hand does
+# everything except publishing, which makes it the dry run for a release.
+#
+# Published today:
+#   crates.io  markstone-core, markstone-actos, markstone
+#   npm        markstone (native addons for eight platforms + WebAssembly)
+#
+# PyPI, Maven Central, NuGet and the Go module are not released yet; see
+# ROADMAP.md for what each one still needs.
+#
+# Secrets: CARGO_REGISTRY_TOKEN, NPM_TOKEN.
+
 name: Release
 
 on:
   push:
     tags: ["v*"]
   workflow_dispatch:
-    inputs:
-      dry_run:
-        description: "Dry run (build and verify without publishing)"
-        required: false
-        default: false
-        type: boolean
 
 permissions:
-  contents: write
-  id-token: write
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
-  # ============================================================================
-  # Pre-flight Check: Manifest Version Consistency
-  # ============================================================================
-  check-version:
-    name: Check version consistency
+  verify:
+    name: Verify
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          python-version: "3.12"
+          components: rustfmt, clippy
 
-      - name: Verify tag matches manifests
+      - name: Manifest versions agree
+        run: python3 scripts/check_versions.py
+
+      - name: Read the version
+        id: version
         run: |
-          set -euo pipefail
-          tag_version="${GITHUB_REF_NAME#v}"
-          echo "Release tag version: ${tag_version}"
-          python3 scripts/check_versions.py
-
-  # ============================================================================
-  # Job 1: build-natives (9 target platforms from Section 7 of PLAN.md)
-  # ============================================================================
-  build-natives:
-    name: Build Native (${{ matrix.name }})
-    needs: check-version
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # 1. linux x86_64 gnu
-          - name: linux-x86_64-gnu
-            os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            shared_lib: libmarkstone.so
-            static_lib: libmarkstone.a
-            abi_symlink: libmarkstone_abi.so
-            archive_ext: tar.gz
-            cross: false
-
-          # 2. linux x86_64 musl
-          - name: linux-x86_64-musl
-            os: ubuntu-latest
-            target: x86_64-unknown-linux-musl
-            shared_lib: libmarkstone.so
-            static_lib: libmarkstone.a
-            abi_symlink: libmarkstone_abi.so
-            archive_ext: tar.gz
-            cross: false
-            musl: true
-
-          # 3. linux aarch64 gnu
-          - name: linux-aarch64-gnu
-            os: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
-            shared_lib: libmarkstone.so
-            static_lib: libmarkstone.a
-            abi_symlink: libmarkstone_abi.so
-            archive_ext: tar.gz
-            cross: true
-
-          # 4. linux aarch64 musl
-          - name: linux-aarch64-musl
-            os: ubuntu-latest
-            target: aarch64-unknown-linux-musl
-            shared_lib: libmarkstone.so
-            static_lib: libmarkstone.a
-            abi_symlink: libmarkstone_abi.so
-            archive_ext: tar.gz
-            cross: true
-
-          # 5. macos x86_64
-          - name: macos-x86_64
-            os: macos-13
-            target: x86_64-apple-darwin
-            shared_lib: libmarkstone.dylib
-            static_lib: libmarkstone.a
-            abi_symlink: libmarkstone_abi.dylib
-            archive_ext: tar.gz
-            cross: false
-
-          # 6. macos aarch64
-          - name: macos-aarch64
-            os: macos-latest
-            target: aarch64-apple-darwin
-            shared_lib: libmarkstone.dylib
-            static_lib: libmarkstone.a
-            abi_symlink: libmarkstone_abi.dylib
-            archive_ext: tar.gz
-            cross: false
-
-          # 7. windows x86_64
-          - name: windows-x86_64
-            os: windows-latest
-            target: x86_64-pc-windows-msvc
-            shared_lib: markstone.dll
-            static_lib: markstone.lib
-            abi_symlink: markstone_abi.dll
-            archive_ext: zip
-            cross: false
-
-          # 8. windows aarch64
-          - name: windows-aarch64
-            os: windows-latest
-            target: aarch64-pc-windows-msvc
-            shared_lib: markstone.dll
-            static_lib: markstone.lib
-            abi_symlink: markstone_abi.dll
-            archive_ext: zip
-            cross: false
-
-          # 9. wasm32 (browser)
-          - name: wasm32-browser
-            os: ubuntu-latest
-            target: wasm32-unknown-unknown
-            archive_ext: tar.gz
-            cross: false
-            is_wasm: true
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-
-      - name: Install Linux dependencies (musl / cross)
-        if: runner.os == 'Linux' && matrix.musl
-        run: sudo apt-get update && sudo apt-get install -y musl-tools
-
-      - name: Install cross
-        if: matrix.cross
-        uses: cross-rs/cargo-install-action@v1
-        with:
-          crate: cross
-
-      - name: Install wasm-pack
-        if: matrix.is_wasm
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-
-      # Build step
-      - name: Build WASM bundle
-        if: matrix.is_wasm
-        run: |
-          wasm-pack build bindings/wasm --target web --out-dir ../node/wasm
-          rm -f bindings/node/wasm/.gitignore
-
-      - name: Build native library (cross)
-        if: matrix.cross && !matrix.is_wasm
-        run: cross build --release -p markstone-abi --target ${{ matrix.target }}
-
-      - name: Build native library (standard)
-        if: "!matrix.cross && !matrix.is_wasm"
-        run: cargo build --release -p markstone-abi --target ${{ matrix.target }}
-
-      # Packaging step
-      - name: Package release archive
-        shell: bash
-        run: |
-          set -euo pipefail
-          version="${GITHUB_REF_NAME:-v0.1.0}"
-          dist_dir="dist/${{ matrix.name }}"
-          mkdir -p "${dist_dir}"
-          archive_name="markstone-${version}-${{ matrix.name }}"
-
-          if [ "${{ matrix.is_wasm }}" = "true" ]; then
-            mkdir -p "pkg-staging/${archive_name}"
-            cp -r bindings/node/wasm/* "pkg-staging/${archive_name}/"
-            cp README.md LICENSE "pkg-staging/${archive_name}/"
-            tar -czf "${dist_dir}/${archive_name}.tar.gz" -C pkg-staging "${archive_name}"
-          else
-            src_dir="target/${{ matrix.target }}/release"
-            mkdir -p "pkg-staging/${archive_name}"
-            cp "${src_dir}/${{ matrix.shared_lib }}" "pkg-staging/${archive_name}/"
-            cp "${src_dir}/${{ matrix.shared_lib }}" "pkg-staging/${archive_name}/${{ matrix.abi_symlink }}"
-            if [ -f "${src_dir}/${{ matrix.static_lib }}" ]; then
-              cp "${src_dir}/${{ matrix.static_lib }}" "pkg-staging/${archive_name}/"
-            fi
-            mkdir -p "pkg-staging/${archive_name}/include"
-            cp abi/include/markstone.h "pkg-staging/${archive_name}/include/"
-            cp README.md LICENSE "pkg-staging/${archive_name}/"
-
-            # Raw files for pack_natives
-            mkdir -p "raw-staging/${{ matrix.name }}"
-            cp "${src_dir}/${{ matrix.shared_lib }}" "raw-staging/${{ matrix.name }}/"
-            cp "${src_dir}/${{ matrix.shared_lib }}" "raw-staging/${{ matrix.name }}/${{ matrix.abi_symlink }}"
-
-            if [ "${{ matrix.archive_ext }}" = "zip" ]; then
-              (cd pkg-staging && 7z a "../${dist_dir}/${archive_name}.zip" "${archive_name}")
-            else
-              tar -czf "${dist_dir}/${archive_name}.tar.gz" -C pkg-staging "${archive_name}"
-            fi
+          version="$(cargo metadata --no-deps --format-version 1 \
+            | jq -r '.packages[] | select(.name == "markstone-core") | .version')"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          if [[ "$GITHUB_REF" == refs/tags/v* && "${GITHUB_REF_NAME#v}" != "$version" ]]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match the manifest version ${version}"
+            exit 1
           fi
 
-      - name: Upload prebuilt archive
-        uses: actions/upload-artifact@v4
-        with:
-          name: prebuilt-${{ matrix.name }}
-          path: dist/${{ matrix.name }}/*
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: cargo test --workspace
+      - name: Package the crates
+        run: cargo publish --workspace --dry-run
 
-      - name: Upload raw native binaries for packaging
-        if: "!matrix.is_wasm"
-        uses: actions/upload-artifact@v4
-        with:
-          name: native-${{ matrix.name }}
-          path: raw-staging/${{ matrix.name }}/*
-
-      - name: Upload wasm files for npm
-        if: matrix.is_wasm
-        uses: actions/upload-artifact@v4
-        with:
-          name: wasm-bundle
-          path: bindings/node/wasm/*
-
-  # ============================================================================
-  # Aggregate SHA256 Checksums
-  # ============================================================================
-  aggregate-checksums:
-    name: Aggregate Checksums
-    needs: build-natives
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: prebuilt-*
-          merge-multiple: true
-          path: all-archives
-
-      - name: Compute SHA256SUMS
-        run: |
-          cd all-archives
-          sha256sum markstone-* > ../SHA256SUMS
-          cat ../SHA256SUMS
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-checksums
-          path: SHA256SUMS
-
-  # ============================================================================
-  # Job 2: github-release
-  # ============================================================================
-  github-release:
-    name: Create GitHub Release
-    needs: [build-natives, aggregate-checksums]
-    if: startsWith(github.ref, 'refs/tags/v') && (github.event.inputs.dry_run != 'true')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: prebuilt-*
-          merge-multiple: true
-          path: release-assets
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-checksums
-          path: release-assets
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: release-assets/*
-          generate_release_notes: true
-          draft: false
-          prerelease: false
-
-  # ============================================================================
-  # Job 3: publish-crates
-  # ============================================================================
-  publish-crates:
-    name: Publish Crates to crates.io
-    needs: [check-version, build-natives]
-    if: startsWith(github.ref, 'refs/tags/v') && (github.event.inputs.dry_run != 'true')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-
-      - name: Publish markstone-core
-        run: cargo publish -p markstone-core --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
-
-      - name: Wait for crates.io index propagation
-        run: sleep 30
-
-      - name: Publish markstone-actos
-        run: cargo publish -p markstone-actos --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
-
-      - name: Wait for crates.io index propagation
-        run: sleep 30
-
-      - name: Publish markstone (Rust binding)
-        run: cargo publish --manifest-path bindings/rust/Cargo.toml --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
-
-  # ============================================================================
-  # Job 4: publish-pypi (Multi-platform abi3 wheels and sdist)
-  # ============================================================================
-  publish-pypi:
-    name: Build & Publish PyPI Wheels
-    needs: [check-version, build-natives]
-    if: startsWith(github.ref, 'refs/tags/v') && (github.event.inputs.dry_run != 'true')
+  # One Node addon per platform. Each is tested on the platform it was built
+  # for before it goes into the package.
+  node-addon:
+    name: Addon (${{ matrix.tag }})
+    needs: verify
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-          - os: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
-            cross: true
-          - os: macos-latest
-            target: aarch64-apple-darwin
-          - os: macos-13
-            target: x86_64-apple-darwin
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
+          - tag: linux-x64-gnu
+            os: ubuntu-latest
+            image: quay.io/pypa/manylinux_2_28_x86_64
+          - tag: linux-arm64-gnu
+            os: ubuntu-24.04-arm
+            image: quay.io/pypa/manylinux_2_28_aarch64
+          - tag: linux-x64-musl
+            os: ubuntu-latest
+            image: rust:1-alpine
+            musl: true
+          - tag: linux-arm64-musl
+            os: ubuntu-24.04-arm
+            image: rust:1-alpine
+            musl: true
+          - tag: darwin-x64
+            os: macos-15-intel
+            lib: libmarkstone_node.dylib
+          - tag: darwin-arm64
+            os: macos-latest
+            lib: libmarkstone_node.dylib
+          - tag: win32-x64
+            os: windows-latest
+            lib: markstone_node.dll
+          - tag: win32-arm64
+            os: windows-11-arm
+            lib: markstone_node.dll
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
 
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-
-      - name: Build sdist (Ubuntu x86_64 only)
-        if: matrix.os == 'ubuntu-latest' && matrix.target == 'x86_64-unknown-linux-gnu'
+      # Linux addons are built in containers: glibc 2.28 is the floor Node 18
+      # itself requires, and musl needs a dynamically linked libc to be
+      # loadable as an addon.
+      - name: Build (glibc)
+        if: matrix.image && !matrix.musl
         run: |
-          pip install maturin
-          cd bindings/python && maturin sdist -o ../../dist
+          docker run --rm -v "$PWD:/src" -w /src "${{ matrix.image }}" bash -euc '
+            curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
+            . "$HOME/.cargo/env"
+            cargo build --release --locked -p markstone-node
+          '
+          cp target/release/libmarkstone_node.so "bindings/node/markstone.${{ matrix.tag }}.node"
 
-      - name: Build wheel with maturin
-        uses: PyO3/maturin-action@v1
-        with:
-          target: ${{ matrix.target }}
-          args: --release --out dist -m bindings/python/Cargo.toml
-          manylinux: auto
+      - name: Build (musl)
+        if: matrix.musl
+        run: |
+          docker run --rm -v "$PWD:/src" -w /src \
+            -e RUSTFLAGS="-C target-feature=-crt-static" \
+            "${{ matrix.image }}" sh -euc '
+              apk add --no-cache musl-dev
+              cargo build --release --locked -p markstone-node
+            '
+          cp target/release/libmarkstone_node.so "bindings/node/markstone.${{ matrix.tag }}.node"
 
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          packages-dir: dist/
-          skip-existing: true
+      - name: Install Rust
+        if: "!matrix.image"
+        uses: dtolnay/rust-toolchain@stable
 
-  # ============================================================================
-  # Job 5: publish-npm
-  # ============================================================================
-  publish-npm:
-    name: Publish to npm
-    needs: [check-version, build-natives]
-    if: startsWith(github.ref, 'refs/tags/v') && (github.event.inputs.dry_run != 'true')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+      - name: Build (native)
+        if: "!matrix.image"
+        shell: bash
+        run: |
+          cargo build --release --locked -p markstone-node
+          cp "target/release/${{ matrix.lib }}" "bindings/node/markstone.${{ matrix.tag }}.node"
+
+      - name: Test (musl)
+        if: matrix.musl
+        run: |
+          docker run --rm -v "$PWD:/src" -w /src/bindings/node node:22-alpine \
+            node --test test/index.test.js
+
       - uses: actions/setup-node@v4
+        if: "!matrix.musl"
         with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org"
+          node-version: "22"
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: wasm-bundle
-          path: bindings/node/wasm
-
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: native-*
-          merge-multiple: true
-          path: natives
-
-      - name: Arrange native addons
-        run: |
-          cargo build --release -p markstone-node
-          cp target/release/libmarkstone_node.so bindings/node/markstone.node
-
-      - name: Test package
+      - name: Test
+        if: "!matrix.musl"
         working-directory: bindings/node
         run: node --test test/index.test.js
 
-      - name: Publish npm package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: addon-${{ matrix.tag }}
+          path: bindings/node/markstone.${{ matrix.tag }}.node
+          if-no-files-found: error
+
+  wasm:
+    name: WebAssembly
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-pack
+
+      - name: Build
+        run: |
+          wasm-pack build bindings/wasm --release --target web --out-dir ../node/wasm
+          rm -f bindings/node/wasm/.gitignore
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wasm
+          path: bindings/node/wasm/
+          if-no-files-found: error
+
+  npm-package:
+    name: npm package
+    needs: [verify, node-addon, wasm]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: addon-*
+          merge-multiple: true
+          path: bindings/node
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: wasm
+          path: bindings/node/wasm
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Every platform is present
         working-directory: bindings/node
+        run: |
+          for tag in linux-x64-gnu linux-arm64-gnu linux-x64-musl linux-arm64-musl \
+                     darwin-x64 darwin-arm64 win32-x64 win32-arm64; do
+            test -s "markstone.${tag}.node" || { echo "::error::Missing addon for ${tag}"; exit 1; }
+          done
+
+      # The native/WebAssembly parity test now runs against the fresh build.
+      - name: Test
+        working-directory: bindings/node
+        run: node --test test/index.test.js
+
+      - name: Pack
+        working-directory: bindings/node
+        run: |
+          npm pack
+          tar -tzf markstone-*.tgz | sort
+
+      # Install the tarball the way a user would, on glibc and on musl, and
+      # once with the addon removed to exercise the WebAssembly fallback.
+      - name: Install and import
+        run: |
+          tarball="$(ls "$PWD"/bindings/node/markstone-*.tgz)"
+          cat > smoke.mjs <<'EOF'
+          import { toHtml, actos } from 'markstone';
+          const html = toHtml('**bold** <script>x</script>');
+          const linked = actos.toHtml('@deniz #rust');
+          if (html !== '<p><strong>bold</strong> x</p>\n') throw new Error(`toHtml: ${JSON.stringify(html)}`);
+          if (!linked.includes('href="/u/deniz"')) throw new Error(`actos.toHtml: ${linked}`);
+          console.log('ok', process.platform, process.arch);
+          EOF
+          mkdir smoke && cd smoke
+          npm init -y > /dev/null
+          npm install "$tarball"
+          cp ../smoke.mjs .
+          node smoke.mjs
+          docker run --rm -v "$PWD:/app" -w /app node:22-alpine node smoke.mjs
+          rm node_modules/markstone/markstone.*.node
+          node smoke.mjs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npm-package
+          path: bindings/node/markstone-*.tgz
+          if-no-files-found: error
+
+  publish-crates:
+    name: Publish to crates.io
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [verify, npm-package]
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+
+      # Crate by crate, in dependency order, skipping versions that are
+      # already up so that a failed release can be re-run.
+      - name: Publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          for crate in markstone-core markstone-actos markstone; do
+            status="$(curl -s -o /dev/null -w '%{http_code}' -A 'markstone-release (github.com/actos-dev/markstone)' \
+              "https://crates.io/api/v1/crates/${crate}/${VERSION}")"
+            if [ "$status" = "200" ]; then
+              echo "${crate} ${VERSION} is already published"
+            else
+              cargo publish --locked -p "$crate"
+            fi
+          done
+
+  publish-npm:
+    name: Publish to npm
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [verify, npm-package]
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: npm-package
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --provenance --access public
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          if npm view "markstone@${VERSION}" version > /dev/null 2>&1; then
+            echo "markstone ${VERSION} is already published"
+          else
+            npm publish markstone-*.tgz --provenance --access public
+          fi
 
-  # ============================================================================
-  # Job 6: publish-maven
-  # ============================================================================
-  publish-maven:
-    name: Publish to Maven Central
-    needs: [check-version, build-natives]
-    if: startsWith(github.ref, 'refs/tags/v') && (github.event.inputs.dry_run != 'true')
+  github-release:
+    name: GitHub release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [publish-crates, publish-npm]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-java@v4
-        with:
-          java-version: "25"
-          distribution: temurin
-          cache: maven
-          server-id: central
-          server-username: MAVEN_CENTRAL_USERNAME
-          server-password: MAVEN_CENTRAL_PASSWORD
-          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - uses: actions/download-artifact@v4
         with:
-          pattern: native-*
-          path: natives
+          name: npm-package
 
-      - name: Arrange native libraries for JVM
-        run: |
-          python3 scripts/pack_natives.py --artifacts natives
-
-      - name: Verify JAR contents and package
-        working-directory: bindings/jvm
-        run: |
-          mvn -B -DskipTests package
-          contents="$(jar tf target/markstone-*.jar)"
-          echo "${contents}" | grep -q "native/" || {
-            echo "::error::JAR does not contain native libraries"
-            exit 1
-          }
-
-      - name: Deploy to Maven Central
-        working-directory: bindings/jvm
+      - name: Create the release
         env:
-          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
-        run: mvn -B -Prelease -DskipTests deploy
-
-  # ============================================================================
-  # Job 7: publish-nuget
-  # ============================================================================
-  publish-nuget:
-    name: Publish to NuGet
-    needs: [check-version, build-natives]
-    if: startsWith(github.ref, 'refs/tags/v') && (github.event.inputs.dry_run != 'true')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0.x"
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: native-*
-          path: natives
-
-      - name: Arrange native libraries for .NET
+          GH_TOKEN: ${{ github.token }}
         run: |
-          python3 scripts/pack_natives.py --artifacts natives
-
-      - name: Pack NuGet Package
-        run: dotnet pack bindings/dotnet/src/Markstone/Markstone.csproj -c Release -o nupkg
-
-      - name: Verify NuGet runtimes layout
-        run: |
-          contents="$(unzip -l nupkg/*.nupkg)"
-          echo "${contents}" | grep -q "runtimes/" || {
-            echo "::error::NuGet package does not contain runtimes/ native libraries"
-            exit 1
-          }
-
-      - name: Push to NuGet
-        run: |
-          dotnet nuget push nupkg/*.nupkg \
-            --api-key "${{ secrets.NUGET_API_KEY }}" \
-            --source https://api.nuget.org/v3/index.json \
-            --skip-duplicate
+          gh release create "$GITHUB_REF_NAME" markstone-*.tgz \
+            --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes

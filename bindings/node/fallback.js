@@ -1,13 +1,20 @@
+// Entry point for Node and other non-browser runtimes: the native addon when
+// this platform has one, the WebAssembly build otherwise.
 let binding;
 
 try {
   binding = await import('./index.js');
 } catch (_) {
-  // Native addon failed to load or unsupported platform; fallback to wasm
+  // No addon for this platform, or it failed to load.
 }
 
 if (!binding) {
   binding = await import('./browser.js');
+  if (typeof process !== 'undefined' && process.versions?.node) {
+    const { readFileSync } = await import('node:fs');
+    const wasm = readFileSync(new URL('./wasm/markstone_wasm_bg.wasm', import.meta.url));
+    binding.initSync({ module: wasm });
+  }
 }
 
 export const {
